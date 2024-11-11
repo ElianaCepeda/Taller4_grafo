@@ -643,62 +643,79 @@ void Grafo<T>::kruskal() {
     */
 }
 
-
 template <class T>
-void Grafo<T>::prim(T inicio) {
+std::vector<std::vector<int>> Grafo<T>::prim(T inicio) {
     int numVertices = cantVertices();
     std::vector<bool> enArbol(numVertices, false);  // Marca si el vértice está en el árbol
-    std::vector<int> minPeso(numVertices, std::numeric_limits<int>::max());  // El peso mínimo de cada vértice
-    std::vector<int> padre(numVertices, -1);  // Para almacenar el vértice padre de cada vértice en el árbol
+    std::vector<int> minPeso(numVertices, std::numeric_limits<int>::max());  // Peso mínimo
+    std::vector<int> padre(numVertices, -1);  // Almacena el vértice padre de cada vértice
 
     // Obtener el índice del vértice de inicio
     int indiceInicio = buscarVertice(inicio);
     if (indiceInicio == -1) {
         std::cout << "El vértice " << inicio << " no está en el grafo." << std::endl;
-        return;
+        return {};
     }
 
-    minPeso[indiceInicio] = 0;  // El peso de inicio es 0, porque es el primer vértice en el árbol
+    minPeso[indiceInicio] = 0;
+    std::vector<std::vector<int>> todasRutas(numVertices);  // Almacena todas las rutas
 
-    // Bucle principal de Prim
-    for (int i = 0; i < numVertices; ++i) {
-        // Buscar el vértice con el peso mínimo que no esté en el árbol
+    // Conjunto de aristas para manejar vecinos inmediatos sin duplicados
+    std::set<int> vecinosPendientes;  
+    vecinosPendientes.insert(indiceInicio);
+
+    // Bucle principal de Prim para construir el árbol de expansión mínima
+    while (!vecinosPendientes.empty()) {
         int u = -1;
         int pesoMinimo = std::numeric_limits<int>::max();
 
-        for (int v = 0; v < numVertices; ++v) {
-            if (!enArbol[v] && minPeso[v] < pesoMinimo) {
-                u = v;
+        // Encontrar el vértice `u` con el menor peso de conexión no incluido en el árbol
+        for (int v : vecinosPendientes) {
+            if (minPeso[v] < pesoMinimo) {
                 pesoMinimo = minPeso[v];
+                u = v;
             }
         }
 
-        // Si no se encuentra un vértice para agregar, significa que ya todos están en el árbol
+        // Si no se encuentra un vértice, terminar
         if (u == -1) break;
 
-        // Marcar el vértice u como parte del árbol
-        enArbol[u] = true;
+        vecinosPendientes.erase(u);  // Eliminar `u` del conjunto
+        enArbol[u] = true;           // Marcar `u` como parte del árbol
 
-        // Actualizar los valores de minPeso para los vértices adyacentes
-        for (int v = 0; v < numVertices; ++v) {
-            if (!enArbol[v] && aristas[u][v] != 0 && aristas[u][v] < minPeso[v]) {
-                minPeso[v] = aristas[u][v];
+        // Construir la ruta desde el inicio hasta el vértice `u` en `todasRutas`
+        std::vector<int> ruta;
+        int actual = u;
+        while (actual != -1) {
+            ruta.push_back(actual);
+            actual = padre[actual];
+        }
+        std::reverse(ruta.begin(), ruta.end());
+        todasRutas[u] = ruta;
+
+        // Explorar vecinos de `u` y actualizar pesos mínimos
+        std::vector<unsigned long> vecinos = indicesVecinos(u);
+        for (int i = 0; i < vecinos.size(); ++i) {
+            int v = vecinos[i];
+            int pesoArista = static_cast<int>(aristas[u][v]);
+            if (!enArbol[v] && pesoArista < minPeso[v]) {
+                minPeso[v] = pesoArista;
                 padre[v] = u;
+                vecinosPendientes.insert(v);
             }
         }
     }
 
-    // Mostrar las aristas del árbol de expansión mínima
+    // Imprimir el árbol de expansión mínima
     std::cout << "Árbol de expansión mínima de Prim:" << std::endl;
     for (int i = 0; i < numVertices; ++i) {
         if (padre[i] != -1) {
-            std::cout << "Arista: " << vertices[padre[i]] << " - " << vertices[i] << " con peso " << aristas[padre[i]][i] << std::endl;
+            std::cout << "Arista: " << vertices[padre[i]] << " - " << vertices[i] 
+                      << " con peso " << aristas[padre[i]][i] << std::endl;
         }
     }
+
+    return todasRutas;
 }
 
-template <class T>
-double Grafo<T>::obtenerCosto(int id1, int id2){
-    return aristas[id1][id2];
-}
 
