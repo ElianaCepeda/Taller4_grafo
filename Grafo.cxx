@@ -113,7 +113,7 @@ bool Grafo<T>::insertarArista(int i_ori, int i_des, float cos) {
 }
 
 template <class T>
-bool Grafo<T>::insAristaNoDir(T ori, T des, int cos) {
+bool Grafo<T>::insAristaNoDir(int ori, int des, float cos) {
     bool res1 = insertarArista(ori, des, cos);
     bool res2 = insertarArista(des, ori, cos);
     return (res1 && res2);

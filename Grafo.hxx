@@ -23,7 +23,7 @@ class Grafo {
         int buscarVertice(T ver);
         bool insertarVertice(T ver);
         bool insertarArista(int ori, int des, float cos);
-        bool insAristaNoDir(T ori, T des, int cos);
+        bool insAristaNoDir(int ori, int des, float cos);
         int buscarArista(T origen, T destino);
         bool eliminarVertice(T ver);
         bool eliminarArista (T origen, T destino);
