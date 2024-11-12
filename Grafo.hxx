@@ -17,7 +17,7 @@ class Grafo {
         void setAristas (double** aristas);
         const std::vector<T>& getVertices() const;
         double** getAristas();
-        T getVertice(int indice);
+        T *getVertice(int indice);
         int cantVertices();
         int cantAristas();
         int buscarVertice(T ver);
@@ -39,7 +39,7 @@ class Grafo {
         std::vector<int> circuitoEuler();
         void floydWarshall();
         void kruskal(); 
-        void prim(T inicio);
+        std::vector< std::vector<unsigned long> > prim(int inicio);
         double obtenerCosto(int id1, int id2);
 
 };

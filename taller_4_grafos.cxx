@@ -107,7 +107,7 @@ int main( int argc, char* argv[] )
     std::cout<<std::endl;
   } */
 
-  std::cout << "Porteria: " << g.getVertice( 0 ).X << "," << g.getVertice( 0 ).Y << std::endl;
+  std::cout << "Porteria: " << g.getVertice( 0 )->X << "," << g.getVertice( 0 )->Y << std::endl;
 
   // TODO # 5: Calcular distancias lineales (distancia Euclidiana)
   unsigned long s_id = 0;
@@ -116,13 +116,13 @@ int main( int argc, char* argv[] )
   
   for ( unsigned int j = 0; j < g.cantVertices( ); ++j )
   {
-    dist_s_e = g.getVertice( s_id ).distanciaA( g.getVertice( j ) );
+    dist_s_e = g.getVertice( s_id )->distanciaA( *g.getVertice( j ) );
     distLineales.push_back( dist_s_e );
       
   }
 
   // TODO # 6: Encontrar las rutas de costo minimo usando los algoritmos requeridos
-  //TCaminos caminosPrim = g.prim( 0 );
+  TCaminos caminosPrim = g.prim( 0 );
   TCaminos caminosDijkstra = g.dijkstra( 0 );
 
   /* TODO # 7: Imprimir el informe de Prim
@@ -153,26 +153,47 @@ int main( int argc, char* argv[] )
   /* TODO # 8: Imprimir el informe de Dijkstra (mismo fomato que informe de Prim)
    */
 
-  TRuta ruta;
-  float cosTotal;
-  for ( unsigned int j = 0; j < g.cantVertices( ); ++j )
+  TRuta rutad;
+  float cosTotald;
+  TRuta rutap;
+  float cosTotalp;
+  for ( unsigned int j = 1; j < g.cantVertices( ); ++j )
   {
     std::cout << "\nCasa " << j << ":" 
-              << g.getVertice( j ).X << "," << g.getVertice( j ).Y << std::endl;
+              << g.getVertice( j )->X << "," << g.getVertice( j )->Y << std::endl;
     std::cout << "Distancia lineal a porteria: " << distLineales[ j ] << std::endl;
 
+    
+    rutad = caminosDijkstra[ j ];
+    rutap = caminosPrim[j];
+
     std::cout << "Camino segun algoritmo de Dijkstra: ";
-    ruta = caminosDijkstra[ j ];
-  
-    for( unsigned int i = 0; i < ruta.size( ); ++i )
-      std::cout << ruta[ i ] << " - ";
+    if(rutad.size()!=0)
+    std::cout << rutad[ 0 ];
+    for( unsigned int i = 1; i < rutad.size( ); ++i )
+      std::cout << " - "<< rutad[ i ] ;
 
       std::cout << std::endl;
       std::cout << "Distancia total recorrida con algoritmo de Dijkstra: ";
-      cosTotal = 0.0;
-      for( unsigned int k = 0; k < ruta.size( ) - 1; ++k )
-        cosTotal += g.obtenerCosto( ruta[ k ], ruta[ k + 1 ] );
-      std::cout << cosTotal << std::endl;
+      cosTotald = 0.0;
+      for( unsigned int k = 0; k < rutad.size( ) - 1; ++k )
+        cosTotald += g.obtenerCosto( rutad[ k ], rutad[ k + 1 ] );
+      std::cout << cosTotald << std::endl;
+
+
+
+      std::cout << "Camino segun algoritmo de Prim: ";
+      if(rutad.size()!=0)
+      std::cout << rutad[ 0 ];
+      for( unsigned int i = 1; i < rutap.size( ); ++i )
+      std::cout << " - "<< rutap[ i ] ;
+
+      std::cout << std::endl;
+      std::cout << "Distancia total recorrida con algoritmo de Prim: ";
+      cosTotalp = 0.0;
+      for( unsigned int k = 0; k < rutap.size( ) - 1; ++k )
+        cosTotalp += g.obtenerCosto( rutap[ k ], rutap[ k + 1 ] );
+      std::cout << cosTotalp << std::endl;
 
       std::cout << "Comparacion de Prim con Dijkstra: \n";
 

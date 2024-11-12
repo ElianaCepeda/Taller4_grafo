@@ -6,6 +6,7 @@
 #include <limits>
 #include <iostream>
 #include <cfloat>
+#include <set>
 
 template <class T>
 Grafo<T>::Grafo() {
@@ -33,8 +34,11 @@ double** Grafo<T>::getAristas() {
 }
 
 template <class T>
-T Grafo<T>::getVertice(int indice){
-    return vertices[indice];
+T* Grafo<T>::getVertice(int indice){
+    if(indice<= cantVertices())
+    return &vertices[indice];
+    else
+    return nullptr;
 }
 
 template <class T>
@@ -643,22 +647,23 @@ void Grafo<T>::kruskal() {
     */
 }
 
+
 template <class T>
-std::vector<std::vector<int>> Grafo<T>::prim(T inicio) {
+std::vector<std::vector<unsigned long >> Grafo<T>::prim(int indiceInicio) {
     int numVertices = cantVertices();
     std::vector<bool> enArbol(numVertices, false);  // Marca si el vértice está en el árbol
     std::vector<int> minPeso(numVertices, std::numeric_limits<int>::max());  // Peso mínimo
     std::vector<int> padre(numVertices, -1);  // Almacena el vértice padre de cada vértice
 
     // Obtener el índice del vértice de inicio
-    int indiceInicio = buscarVertice(inicio);
-    if (indiceInicio == -1) {
-        std::cout << "El vértice " << inicio << " no está en el grafo." << std::endl;
+    T *TInicio = getVertice(indiceInicio);
+    if (TInicio== nullptr) {
+        std::cout << "El vértice " << indiceInicio << " no está en el grafo." << std::endl;
         return {};
     }
 
     minPeso[indiceInicio] = 0;
-    std::vector<std::vector<int>> todasRutas(numVertices);  // Almacena todas las rutas
+    std::vector<std::vector<unsigned long>> todasRutas(numVertices);  // Almacena todas las rutas
 
     // Conjunto de aristas para manejar vecinos inmediatos sin duplicados
     std::set<int> vecinosPendientes;  
@@ -684,7 +689,7 @@ std::vector<std::vector<int>> Grafo<T>::prim(T inicio) {
         enArbol[u] = true;           // Marcar `u` como parte del árbol
 
         // Construir la ruta desde el inicio hasta el vértice `u` en `todasRutas`
-        std::vector<int> ruta;
+        std::vector<unsigned long> ruta;
         int actual = u;
         while (actual != -1) {
             ruta.push_back(actual);
@@ -707,15 +712,18 @@ std::vector<std::vector<int>> Grafo<T>::prim(T inicio) {
     }
 
     // Imprimir el árbol de expansión mínima
-    std::cout << "Árbol de expansión mínima de Prim:" << std::endl;
+   /*  std::cout << "Árbol de expansión mínima de Prim:" << std::endl;
     for (int i = 0; i < numVertices; ++i) {
         if (padre[i] != -1) {
             std::cout << "Arista: " << vertices[padre[i]] << " - " << vertices[i] 
                       << " con peso " << aristas[padre[i]][i] << std::endl;
         }
-    }
+    } */
 
     return todasRutas;
 }
 
-
+template <class T>
+double Grafo<T>::obtenerCosto(int id1, int id2){
+    return aristas[id1][id2];
+}
